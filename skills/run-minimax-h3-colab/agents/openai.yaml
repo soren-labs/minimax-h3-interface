@@ -1,0 +1,4 @@
+interface:
+  display_name: "Run MiniMax H3 on Colab"
+  short_description: "参数化启动、监控并归档 Colab H3 视频生产任务"
+  default_prompt: "Use $run-minimax-h3-colab to run a parameterized MiniMax H3 I2V job on Colab and monitor it to completion."

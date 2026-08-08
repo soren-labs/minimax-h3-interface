@@ -1,0 +1,12 @@
+{
+  "sage_version": "2.2.0",
+  "sage_revision": "eb615cf6cf4d221338033340ee2de1c37fbdba4a",
+  "python": "3.12",
+  "torch": "2.11.0+cu130",
+  "torch_cuda": "13.0",
+  "cuda_toolkit": "13.0.88",
+  "compute_capability": [12, 0],
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+  "wheel": "sageattention-2.2.0-cp312-cp312-cu130_sm120_linux_x86_64.whl",
+  "sha256": "a055eb25f7c11a05d3725216a4853bc406c5c0266ac5c995f57e1283651d4cc2"
+}

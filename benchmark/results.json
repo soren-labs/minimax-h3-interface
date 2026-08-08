@@ -1,0 +1,38 @@
+{
+  "recorded_at_utc": "2026-08-08T09:12:25.121501+00:00",
+  "status": "success",
+  "mode": "image-to-video-with-native-audio",
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+  "vram_gib": 94.97,
+  "compute_capability": [12, 0],
+  "python": "3.12.13",
+  "torch": "2.11.0+cu130",
+  "cuda": "13.0",
+  "sageattention": {
+    "mode": "prebuilt-wheel",
+    "revision": "eb615cf6cf4d221338033340ee2de1c37fbdba4a",
+    "wheel_sha256": "a055eb25f7c11a05d3725216a4853bc406c5c0266ac5c995f57e1283651d4cc2"
+  },
+  "model": {
+    "lora": "minimax_h3_turbo_v4_step600_ema.safetensors",
+    "steps": 8,
+    "seed": 424242
+  },
+  "output": {
+    "width": 1920,
+    "height": 1088,
+    "frames": 192,
+    "fps": 24,
+    "duration_seconds": 8.0,
+    "video_codec": "h264",
+    "audio_codec": "aac",
+    "audio_sample_rate": 32000,
+    "audio_channels": 2,
+    "file": "example-1080p-8s.mp4",
+    "file_bytes": 9416495
+  },
+  "timing": {
+    "end_to_end_seconds": 372.541,
+    "seconds_per_step": 46.568
+  }
+}

@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+.runtime/
+results/
+restored_keyframes_15_4K.zip
+*:Zone.Identifier

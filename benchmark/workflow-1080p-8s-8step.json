@@ -1,0 +1,190 @@
+{
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "minimax_h3_fl2va_pruned_int8_convrot.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_32b_minimax_h3_int8_convrot.safetensors",
+      "type": "minimax",
+      "device": "default"
+    }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "minimax_h3_video_vae_fp16.safetensors"
+    }
+  },
+  "4": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "minimax_h3_audio_vae_fp32.safetensors"
+    }
+  },
+  "5": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "KF01_h3_1920x1088.png"
+    }
+  },
+  "6": {
+    "class_type": "MiniMaxH3ImageToVideo",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ],
+      "prompt": "For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nintegrated_multimodal_description: [Shot 1] Cinematic Chinese mythic-fantasy landscape, a single continuous shot begins from the exact composition, architecture, cloud sea, ancient pine silhouettes, warm sunset lighting, and tiny solitary robed figure established by <Picture 1>. The enormous vermilion celestial palace remains structurally stable on the right while the layered mountain peaks retain their scale and spacing. The camera pushes forward with small amplitude at slow speed toward the lone figure, then gently arcs right by a few degrees, creating controlled parallax between the dark foreground pines, the figure, the cloud-filled valleys, and the distant palace. Volumetric clouds roll slowly through the lower valleys and curl around the palace foundations without obscuring or deforming the rooflines. The red-orange canopy leaves and pine needles move subtly in the high-altitude wind; the figure's long robe and narrow ribbons flutter naturally while the figure remains facing the immense architecture. Sun rays shift delicately across carved pillars and tiled roofs, revealing fine wood, stone, and cloud texture. No cut, no sudden zoom, no camera shake, no new people, no disappearing architecture, no morphing buildings, no text, subtitles, logos, or watermark.\n\noverall_soundscape: A broad high-altitude wind moves through pine branches and temple eaves, joined by soft robe flutter and a deep distant resonance from the vast palace structures. Slow cloud currents produce a low airy rush across the valley; no speech.\n\nnon_diegetic_music: Sparse low guqin notes at a slow tempo, joined by a restrained deep drum pulse and a very soft sustained orchestral bass tone that rises slightly during the forward movement and fades at the end.",
+      "width": 1920,
+      "height": 1088,
+      "length": 192,
+      "first_frame": [
+        "5",
+        0
+      ]
+    }
+  },
+  "7": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 424242
+    }
+  },
+  "8": {
+    "class_type": "MiniMaxH3TurboLoRA",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "lora_name": "minimax_h3_turbo_v4_step600_ema.safetensors",
+      "strength": 1.0,
+      "low_vram": false
+    }
+  },
+  "18": {
+    "class_type": "MiniMaxH3MemoryEfficientSageAttentionPatch",
+    "inputs": {
+      "model": [
+        "8",
+        0
+      ]
+    }
+  },
+  "9": {
+    "class_type": "BasicGuider",
+    "inputs": {
+      "model": [
+        "18",
+        0
+      ],
+      "conditioning": [
+        "6",
+        0
+      ]
+    }
+  },
+  "10": {
+    "class_type": "BasicScheduler",
+    "inputs": {
+      "model": [
+        "18",
+        0
+      ],
+      "scheduler": "simple",
+      "steps": 8,
+      "denoise": 1.0
+    }
+  },
+  "11": {
+    "class_type": "MiniMaxH3TurboSampler",
+    "inputs": {}
+  },
+  "12": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "7",
+        0
+      ],
+      "guider": [
+        "9",
+        0
+      ],
+      "sampler": [
+        "11",
+        0
+      ],
+      "sigmas": [
+        "10",
+        0
+      ],
+      "latent_image": [
+        "6",
+        1
+      ]
+    }
+  },
+  "13": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "12",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    }
+  },
+  "15": {
+    "class_type": "VAEDecodeAudio",
+    "inputs": {
+      "samples": [
+        "12",
+        0
+      ],
+      "vae": [
+        "4",
+        0
+      ]
+    }
+  },
+  "16": {
+    "class_type": "CreateVideo",
+    "inputs": {
+      "images": [
+        "13",
+        0
+      ],
+      "audio": [
+        "15",
+        0
+      ],
+      "fps": 24,
+      "bit_depth": 8
+    }
+  },
+  "17": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": [
+        "16",
+        0
+      ],
+      "filename_prefix": "h3-turbo/i2v_turbo_1080p_8s_8step",
+      "format": "auto",
+      "codec": "auto"
+    }
+  }
+}
