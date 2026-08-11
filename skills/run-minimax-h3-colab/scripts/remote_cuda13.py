@@ -11,6 +11,9 @@ import shutil
 
 
 LOG = Path("/content/cuda13-upgrade.log")
+PREBUILT_SAGE = Path(
+    "/content/sageattention-2.2.0-cp312-cp312-cu130_sm120_linux_x86_64.whl"
+)
 
 
 def run(
@@ -133,6 +136,25 @@ def install_torch_cu130() -> None:
     )
 
 
+def stack_is_ready() -> bool:
+    code = (
+        "import torch, torchvision, torchaudio, sageattention; "
+        "import sageattention._qattn_sm80, sageattention._qattn_sm89; "
+        "assert torch.__version__ == '2.11.0+cu130'; "
+        "assert torchvision.__version__ == '0.26.0+cu130'; "
+        "assert torchaudio.__version__ == '2.11.0+cu130'; "
+        "assert torch.version.cuda == '13.0'; "
+        "assert torch.cuda.get_device_capability(0) == (12, 0)"
+    )
+    result = subprocess.run(
+        [sys.executable, "-c", code],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    return result.returncode == 0
+
+
 def build_sage(cuda_home: Path) -> Path:
     source = Path("/content/h3-turbo-work/SageAttention-cu130")
     revision = "eb615cf6cf4d221338033340ee2de1c37fbdba4a"
@@ -172,9 +194,7 @@ def build_sage(cuda_home: Path) -> Path:
 
 
 def install_prebuilt_sage() -> Path | None:
-    artifact = Path(
-        "/content/sageattention-2.2.0-cp312-cp312-cu130_sm120_linux_x86_64.whl"
-    )
+    artifact = PREBUILT_SAGE
     if not artifact.is_file():
         return None
     canonical = Path("/tmp/sageattention-2.2.0-cp312-cp312-linux_x86_64.whl")
@@ -213,6 +233,10 @@ def main() -> None:
         flush=True,
     )
     cuda_home = ensure_cuda_toolkit()
+    if PREBUILT_SAGE.is_file() and stack_is_ready():
+        print("CUDA 13 H3 stack already verified; skipping package reinstall", flush=True)
+        verify(cuda_home, PREBUILT_SAGE)
+        return
     install_torch_cu130()
     wheel = install_prebuilt_sage() or build_sage(cuda_home)
     verify(cuda_home, wheel)
