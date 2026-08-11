@@ -17,6 +17,17 @@ Never run `colab new` while any server assignment exists. Never delete an assign
 5. If the remote PID is healthy, resume observation; do not launch a second job.
 6. If the job completed, download `/content/h3-results-<job-id>.tar.gz` and the log and validate them. Preserve the assignment when more queued jobs remain or the user selected `keep running`; stop it only after the final verified job when the user selected `stop after batch`.
 
+Resume monitoring and finalization for the same recorded job directory with:
+
+```bash
+python3 scripts/h3_colab.py \
+  --mode repaint \
+  --steps 4 \
+  --resume-job-dir /absolute/path/to/job-directory
+```
+
+Only when inspection proves that the remote producer exited and the existing environment is repairable, relaunch the producer in the same assignment with `--repair-relaunch`. Pass every already verified clip through repeated `--resume-completed shot-N` arguments; recovery validates and packages those media without sampling them again. The endpoint recorded in `operator-state.json` must match, or the command refuses to proceed.
+
 ## Production failure
 
 Inspect the preserved remote log and ComfyUI logs in `/content/h3-results-<job-id>/logs`. Decide explicitly whether the existing environment is repairable. A restart, stop, or new instance is an operator decision; the normal automation contains no mid-run shutdown or replacement branch.

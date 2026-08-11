@@ -18,8 +18,10 @@ elif not assignments:
 elif len(assignments) == 1:
     assignment = assignments[0]
     info = assignment.runtime_proxy_info
-    variant = getattr(getattr(assignment, "variant", None), "value", "GPU")
-    accelerator = getattr(getattr(assignment, "accelerator", None), "value", "G4")
+    variant_value = getattr(assignment, "variant", None)
+    accelerator_value = getattr(assignment, "accelerator", None)
+    variant = str(getattr(variant_value, "name", variant_value or "GPU"))
+    accelerator = str(getattr(accelerator_value, "value", accelerator_value or "G4"))
     session = SessionState(
         name=name,
         token=info.token,
@@ -42,4 +44,3 @@ else:
         "action": "ambiguous",
         "endpoints": [assignment.endpoint for assignment in assignments],
     }))
-
