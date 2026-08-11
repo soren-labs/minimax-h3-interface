@@ -15,7 +15,7 @@ Never run `colab new` while any server assignment exists. Never delete an assign
 3. Re-establish the local binding before doing anything to the VM.
 4. Inspect `/content/h3-job-<job-id>.log`, the PID, GPU activity, and the expected archive.
 5. If the remote PID is healthy, resume observation; do not launch a second job.
-6. If the job completed, download `/content/h3-results-<job-id>.tar.gz` and the log, validate them, and only then stop the instance.
+6. If the job completed, download `/content/h3-results-<job-id>.tar.gz` and the log and validate them. Preserve the assignment when more queued jobs remain or the user selected `keep running`; stop it only after the final verified job when the user selected `stop after batch`.
 
 ## Production failure
 
@@ -23,4 +23,6 @@ Inspect the preserved remote log and ComfyUI logs in `/content/h3-results-<job-i
 
 ## Success criteria
 
-Treat a run as successful only when the remote success marker exists, the archive downloads, the tar can be opened, and `runs.json` is present. The normal script then stops the instance and marks the local state `complete`.
+Treat a run as successful only when the remote success marker exists, the archive downloads, the tar can be opened, and `runs.json` is present. The normal script then marks the local state `complete`. It preserves the assignment with `--keep-on-success`; without that flag it stops the assignment after verification.
+
+For a batch failure, do not submit the next queued job until the preserved instance and failed job have been inspected. Never work around a failed batch item by creating a second assignment.
